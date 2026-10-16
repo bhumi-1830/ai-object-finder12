@@ -7,4 +7,5 @@ torchvision
 transformers
 Pillow
 supabase
-python-dotenv
+python-dotenvgunicorn
+gunicorn
