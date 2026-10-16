@@ -1,4 +1,3 @@
-```python
 import os
 from functools import lru_cache
 
@@ -267,4 +266,3 @@ def model_status():
             )
         }
     }
-```
