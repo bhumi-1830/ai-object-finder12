@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Object Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">⌁</div>
+            <div>
+                <h1>AI OBJECT<br>FINDER</h1>
+                <span>SMART SEARCH ROBOT</span>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="mini-label">TARGET OBJECT</div>
+            <select id="targetObject">
+                <option>Wallet</option>
+                <option>Keys</option>
+                <option>Phone</option>
+                <option>Bag</option>
+                <option>Book</option>
+                <option>Other</option>
+            </select>
+            <div class="target-chip">TARGET: <b id="targetDisplay">Wallet</b></div>
+        </div>
+
+        <div class="panel reference-panel">
+            <div class="mini-label">REFERENCE OBJECT IMAGE</div>
+            <p>Take a photo of the lost object or upload an existing image.</p>
+
+            <div class="image-input-buttons">
+                <label for="cameraInput" class="image-input-btn">📷 Take Photo</label>
+                <label for="uploadInput" class="image-input-btn">📁 Upload Image</label>
+            </div>
+
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+            <input type="file" id="uploadInput" accept="image/*" hidden>
+
+            <div id="referencePreview" class="reference-preview">
+                <span>No reference image selected</span>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="primary-btn" onclick="startSearch()">▶ START SEARCH</button>
+            <button class="danger-btn" onclick="stopSearch()">■ STOP ROBOT</button>
+        </div>
+
+        <div class="panel">
+            <div class="mini-label">MANUAL MOVEMENT</div>
+            <div class="joystick">
+                <button onclick="moveRobot('forward')">▲</button>
+                <div>
+                    <button onclick="moveRobot('left')">◀</button>
+                    <button onclick="moveRobot('stop')">■</button>
+                    <button onclick="moveRobot('right')">▶</button>
+                </div>
+                <button onclick="moveRobot('backward')">▼</button>
+            </div>
+        </div>
+
+        <div class="connection-card">
+            <span>● CLOUD / ML SERVER</span>
+            <b id="cloudStatus">Checking...</b>
+        </div>
+
+        <div class="connection-card">
+            <span>● ROBOT LINK</span>
+            <b>Ready</b>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <span class="eyebrow">AUTONOMOUS SEARCH SYSTEM</span>
+                <h2>Find your lost object with AI.</h2>
+            </div>
+            <div class="live-pill"><span></span> SYSTEM ONLINE</div>
+        </header>
+
+        <section class="hero">
+            <div>
+                <span class="eyebrow">AI OBJECT FINDER</span>
+                <h3>Search. Detect. Locate.</h3>
+                <p>Use the actual object photo as the reference image. The robot camera can later scan the environment and the ML system can compare candidate objects against your reference.</p>
+            </div>
+            <div class="hero-art">◎</div>
+        </section>
+
+        <section class="stats">
+            <div class="stat">
+                <span>TARGET</span>
+                <strong id="targetStat">Wallet</strong>
+            </div>
+            <div class="stat">
+                <span>ROBOT</span>
+                <strong id="robotStatus">Idle</strong>
+            </div>
+            <div class="stat">
+                <span>DETECTION</span>
+                <strong id="detectionStatus">Waiting</strong>
+            </div>
+            <div class="stat">
+                <span>CONFIDENCE</span>
+                <strong id="confidence">0%</strong>
+                <div class="bar"><i id="confidenceBar"></i></div>
+            </div>
+        </section>
+
+        <section class="grid">
+
+            <div class="card camera-card">
+                <div class="card-head">
+                    <div>
+                        <span class="eyebrow">ROBOT CAMERA</span>
+                        <h4>Live Camera</h4>
+                    </div>
+                    <span class="status-dot">LIVE</span>
+                </div>
+                <div class="camera-placeholder">
+                    <div class="camera-cross">+</div>
+                    <p>ESP32-CAM stream will appear here</p>
+                    <small>Camera integration comes after backend + ML testing.</small>
+                </div>
+            </div>
+
+            <div class="card detection-card">
+                <div class="card-head">
+                    <div>
+                        <span class="eyebrow">AI RESULT</span>
+                        <h4>Detection</h4>
+                    </div>
+                    <span id="aiStatus" class="ai-badge">Waiting</span>
+                </div>
+
+                <div class="detection-result">
+                    <span>DETECTED OBJECT</span>
+                    <strong id="detectedObject">None</strong>
+                    <span>SIMILARITY / CONFIDENCE</span>
+                    <strong id="detectedConfidence">0%</strong>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="card history-card">
+            <div class="card-head">
+                <div>
+                    <span class="eyebrow">SEARCH LOG</span>
+                    <h4>Search History</h4>
+                </div>
+                <span id="historyCount">0 events</span>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>OBJECT</th>
+                            <th>CONFIDENCE</th>
+                            <th>STATUS</th>
+                            <th>TIME</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history">
+                        <tr>
+                            <td colspan="4" class="empty">No search events yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            AI Object Finder • IoT + ML + Cloud/Web
+        </footer>
+
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
