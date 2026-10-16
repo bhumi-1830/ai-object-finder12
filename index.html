@@ -29,20 +29,28 @@
                 <option>Book</option>
                 <option>Other</option>
             </select>
-            <div class="target-chip">TARGET: <b id="targetDisplay">Wallet</b></div>
+            <div class="target-chip">
+                TARGET: <b id="targetDisplay">Wallet</b>
+            </div>
         </div>
 
         <div class="panel reference-panel">
             <div class="mini-label">REFERENCE OBJECT IMAGE</div>
-            <p>Take a photo of the lost object or upload an existing image.</p>
+            <p>Take a photo of the lost object or upload an image.</p>
 
             <div class="image-input-buttons">
-                <label for="cameraInput" class="image-input-btn">📷 Take Photo</label>
-                <label for="uploadInput" class="image-input-btn">📁 Upload Image</label>
+                <label for="cameraInput" class="image-input-btn">
+                    📷 Take Photo
+                </label>
+                <label for="uploadInput" class="image-input-btn">
+                    📁 Upload Image
+                </label>
             </div>
 
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
-            <input type="file" id="uploadInput" accept="image/*" hidden>
+            <input type="file" id="cameraInput"
+                   accept="image/*" capture="environment" hidden>
+            <input type="file" id="uploadInput"
+                   accept="image/*" hidden>
 
             <div id="referencePreview" class="reference-preview">
                 <span>No reference image selected</span>
@@ -50,8 +58,12 @@
         </div>
 
         <div class="button-row">
-            <button class="primary-btn" onclick="startSearch()">▶ START SEARCH</button>
-            <button class="danger-btn" onclick="stopSearch()">■ STOP ROBOT</button>
+            <button class="primary-btn" onclick="startSearch()">
+                ▶ START SEARCH
+            </button>
+            <button class="danger-btn" onclick="stopSearch()">
+                ■ STOP ROBOT
+            </button>
         </div>
 
         <div class="panel">
@@ -85,14 +97,19 @@
                 <span class="eyebrow">AUTONOMOUS SEARCH SYSTEM</span>
                 <h2>Find your lost object with AI.</h2>
             </div>
-            <div class="live-pill"><span></span> SYSTEM ONLINE</div>
+            <div class="live-pill">
+                <span></span> SYSTEM ONLINE
+            </div>
         </header>
 
         <section class="hero">
             <div>
                 <span class="eyebrow">AI OBJECT FINDER</span>
                 <h3>Search. Detect. Locate.</h3>
-                <p>Use the actual object photo as the reference image. The robot camera can later scan the environment and the ML system can compare candidate objects against your reference.</p>
+                <p>
+                    Upload a reference image, monitor the robot camera
+                    and manage your object search from one dashboard.
+                </p>
             </div>
             <div class="hero-art">◎</div>
         </section>
@@ -102,23 +119,29 @@
                 <span>TARGET</span>
                 <strong id="targetStat">Wallet</strong>
             </div>
+
             <div class="stat">
                 <span>ROBOT</span>
                 <strong id="robotStatus">Idle</strong>
             </div>
+
             <div class="stat">
                 <span>DETECTION</span>
                 <strong id="detectionStatus">Waiting</strong>
             </div>
+
             <div class="stat">
                 <span>CONFIDENCE</span>
                 <strong id="confidence">0%</strong>
-                <div class="bar"><i id="confidenceBar"></i></div>
+                <div class="bar">
+                    <i id="confidenceBar"></i>
+                </div>
             </div>
         </section>
 
         <section class="grid">
 
+            <!-- ESP32-CAM live feed -->
             <div class="card camera-card">
                 <div class="card-head">
                     <div>
@@ -127,13 +150,37 @@
                     </div>
                     <span class="status-dot">LIVE</span>
                 </div>
-                <div class="camera-placeholder">
+
+                <div class="camera-placeholder" id="cameraPlaceholder">
                     <div class="camera-cross">+</div>
-                    <p>ESP32-CAM stream will appear here</p>
-                    <small>Camera integration comes after backend + ML testing.</small>
+                    <p>ESP32-CAM Live Feed</p>
+                    <small id="cameraMessage">
+                        Connecting to camera...
+                    </small>
+                </div>
+
+                <img
+                    id="esp32LiveFeed"
+                    alt="ESP32-CAM live video"
+                    style="display:none; width:100%; height:auto; border-radius:10px;"
+                >
+
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button type="button"
+                            class="primary-btn"
+                            onclick="connectESP32Camera()">
+                        CONNECT CAMERA
+                    </button>
+
+                    <button type="button"
+                            class="danger-btn"
+                            onclick="disconnectESP32Camera()">
+                        DISCONNECT
+                    </button>
                 </div>
             </div>
 
+            <!-- Detection results -->
             <div class="card detection-card">
                 <div class="card-head">
                     <div>
@@ -146,6 +193,7 @@
                 <div class="detection-result">
                     <span>DETECTED OBJECT</span>
                     <strong id="detectedObject">None</strong>
+
                     <span>SIMILARITY / CONFIDENCE</span>
                     <strong id="detectedConfidence">0%</strong>
                 </div>
@@ -174,7 +222,9 @@
                     </thead>
                     <tbody id="history">
                         <tr>
-                            <td colspan="4" class="empty">No search events yet.</td>
+                            <td colspan="4" class="empty">
+                                No search events yet.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -182,12 +232,56 @@
         </section>
 
         <footer>
-            AI Object Finder • IoT + ML + Cloud/Web
+            AI Object Finder • IoT + ML + Cloud
         </footer>
 
     </main>
 </div>
 
+<!-- Keep your existing dashboard JavaScript -->
 <script src="script.js"></script>
+
+<!-- ESP32-CAM connection only -->
+<script>
+(function () {
+    const CAMERA_IP = "10.128.3.167";
+    const STREAM_URL = "http://" + CAMERA_IP + ":81/stream";
+
+    const feed = document.getElementById("esp32LiveFeed");
+    const placeholder = document.getElementById("cameraPlaceholder");
+    const message = document.getElementById("cameraMessage");
+
+    window.connectESP32Camera = function () {
+        message.textContent = "Connecting to ESP32-CAM...";
+        placeholder.style.display = "none";
+        feed.style.display = "block";
+
+        feed.onerror = function () {
+            feed.style.display = "none";
+            placeholder.style.display = "block";
+            message.textContent =
+                "Stream unavailable. Check camera power, Wi-Fi and IP.";
+        };
+
+        feed.onload = function () {
+            placeholder.style.display = "none";
+            feed.style.display = "block";
+        };
+
+        feed.src = STREAM_URL + "?t=" + Date.now();
+    };
+
+    window.disconnectESP32Camera = function () {
+        feed.removeAttribute("src");
+        feed.style.display = "none";
+        placeholder.style.display = "block";
+        message.textContent = "Camera disconnected.";
+    };
+
+    // Try to start the camera automatically.
+    window.connectESP32Camera();
+})();
+</script>
+
 </body>
 </html>
